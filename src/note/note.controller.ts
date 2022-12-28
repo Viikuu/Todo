@@ -13,7 +13,7 @@ export class NoteController {
       const newNote = await this.noteService.create(createNoteDto);
 
       return response.status(HttpStatus.CREATED).json({
-        message: 'Student has been created successfully',
+        message: 'Note has been created successfully',
         newNote,
       });
     } catch (err) {
