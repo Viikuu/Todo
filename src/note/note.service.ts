@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
@@ -24,36 +24,50 @@ export class NoteService {
   }
 
   async findOne(id: string): Promise<Note> {
-    const existingNote = await this.noteModel
-        .findById(id)
-        .exec();
+    try {
+      const existingNote = await this.noteModel
+          .findById(id)
+          .exec();
 
-    if (!existingNote) {
+      if (!existingNote) {
+        throw "Bad Id";
+      }
+      return existingNote;
+    } catch (error) {
       throw new NotFoundException(`Note #${id} not found!`);
     }
-    return existingNote;
+
   }
 
   async update(id: string, updateNoteDto: UpdateNoteDto): Promise<Note> {
-    const existingNote = await this.noteModel
-        .findByIdAndUpdate(
-          id,
-          updateNoteDto,
-          {new: true})
-        .exec();
+    try{
+      const existingNote = await this.noteModel
+          .findByIdAndUpdate(
+              id,
+              updateNoteDto)
+          .exec();
 
-    if (!existingNote) {
+      if (!existingNote) {
+        throw "Bad Id";
+      }
+      return existingNote;
+    } catch (error) {
       throw new NotFoundException(`Note #${id} not found!`);
     }
-    return existingNote;
   }
 
   async remove(id: string): Promise<Note> {
-    const deletedNote = await this.noteModel.findByIdAndDelete(id);
+    try {
+      const deletedNote = await this.noteModel
+          .findByIdAndDelete(id)
+          .exec();
 
-    if (!deletedNote) {
+      if (!deletedNote) {
+        throw "Bad Id";
+      }
+      return deletedNote;
+    } catch (error) {
       throw new NotFoundException(`Note #${id} not found!`);
     }
-    return deletedNote;
   }
 }
