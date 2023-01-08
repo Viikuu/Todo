@@ -1,81 +1,90 @@
-import {Controller, Get, Post, Body, Param, Delete, HttpStatus, Res, Put} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  HttpStatus,
+  Res,
+  Put,
+  Request,
+  BadRequestException, HttpCode, NotFoundException, UseGuards
+} from "@nestjs/common";
 import { NoteService } from './note.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { JwtAuthGuard } from "../auth/jwt/jwt-auth.guard";
 
+@UseGuards(JwtAuthGuard)
 @Controller('note')
 export class NoteController {
   constructor(private readonly noteService: NoteService) {}
 
   @Post()
-  async create(@Res() response, @Body() createNoteDto: CreateNoteDto) {
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Request() request, @Body() createNoteDto: CreateNoteDto) {
     try {
-      const newNote = await this.noteService.create(createNoteDto);
-
-      return response.status(HttpStatus.CREATED).json({
+      const newNote = await this.noteService.create(createNoteDto, request.user._id);
+      return {
         message: 'Note has been created successfully',
         newNote,
-      });
+      };
     } catch (err) {
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: 400,
-        message: 'Error: Note not created!',
-        error: 'Bad Request',
-      });
+      console.log(err);
+      throw new BadRequestException('Error: Note not created!');
     }
   }
 
   @Get()
-  async findAll(@Res() response) {
-    try{
-      const noteData = await this.noteService.findAll();
-      return response.status(HttpStatus.OK).json({
-        message: 'All notes data found successfully',
-        noteData,
-      })
-    } catch (error) {
-      return response.status(error.status).json(error.response);
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Request() request) {
+    const noteData = await this.noteService.findAll(request.user._id);
+    if(!noteData) {
+      throw new NotFoundException('Notes data not found!');
     }
+    return {
+      message: 'All notes data found successfully',
+      noteData,
+    };
   }
 
   @Get(':id')
-  async findOne(@Res() response, @Param('id') id: string) {
-    try {
-      const existingNote = await this.noteService.findOne(id);
-
-      return response.status(HttpStatus.OK).json({
-        message: 'Note found successfully',
-        existingNote,
-      });
-    } catch (error) {
-      return response.status(error.status).json(error.response);
+  @HttpCode(HttpStatus.OK)
+  async findOne(@Request() request, @Param('id') id: string) {
+    const existingNote = await this.noteService.findOne(id, request.user._id);
+    if(!existingNote) {
+      throw new NotFoundException(`Note #${id} not found!`);
     }
+    return {
+      message: 'Note found successfully',
+      existingNote,
+    };
   }
 
   @Put(':id')
-  async update(@Res() response, @Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
-    try {
-      const existingNote = await this.noteService.update(id, updateNoteDto);
-      return response.status(HttpStatus.OK).json({
-        message: 'Note has been successfully updated',
-        existingNote,
-      });
-    } catch (err) {
-      return response.status(err.status).json(err.response);
+  @HttpCode(HttpStatus.OK)
+  async update(@Request() request, @Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
+    const existingNote = await this.noteService.update(id, updateNoteDto, request.user._id);
+    if (!existingNote) {
+      throw new NotFoundException(`Note #${id} not found!`);
     }
+    return {
+      message: 'Note has been successfully updated',
+      existingNote,
+    };
   }
 
   @Delete(':id')
-  async remove(@Res() response, @Param('id') id: string) {
-    try {
-      const deletedNote = await this.noteService.remove(id);
-
-      return response.status(HttpStatus.OK).json({
-        message: 'Note deleted successfully',
-        deletedNote,
-      });
-    } catch (error) {
-      response.status(error.status).json(error.response);
+  @HttpCode(HttpStatus.OK)
+  async remove(@Request() request, @Param('id') id: string) {
+    const deletedNote = await this.noteService.remove(id, request.user._id);
+    if (!deletedNote) {
+      throw new NotFoundException(`Note #${id} not found!`);
     }
+    return {
+      message: 'Note deleted successfully',
+      deletedNote,
+    };
   }
 }
