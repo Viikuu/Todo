@@ -13,7 +13,8 @@ import { JwtStrategy } from "./auth/jwt/jwt.strategy";
   imports: [
       NoteModule,
       ConfigModule.forRoot(),
-      MongooseModule.forRoot(process.env.DATABASE_HOST, { dbName: 'todolist' }),
+      MongooseModule.forRoot(process.env.DATABASE_HOST, { dbName: 'todolist', useNewUrlParser: true,
+        useUnifiedTopology: true }),
       UserModule,
       AuthModule,
   ],

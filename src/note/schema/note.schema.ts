@@ -7,7 +7,7 @@ export class Note extends Document {
     @Prop({type: String, required: true})
     title: string;
 
-    @Prop({type: String, required: true})
+    @Prop({type: Boolean, required: true})
     state: boolean;
 
     @Prop({ type: String, required: true })

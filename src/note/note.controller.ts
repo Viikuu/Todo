@@ -39,9 +39,12 @@ export class NoteController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(@Request() request) {
-    const noteData = await this.noteService.findAll(request.user._id);
+    const noteData = await this.noteService.findAll(request);
     if(!noteData) {
-      throw new NotFoundException('Notes data not found!');
+      return {
+        message: 'All notes data found successfully',
+        noteData: [],
+      };
     }
     return {
       message: 'All notes data found successfully',

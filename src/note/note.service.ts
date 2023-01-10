@@ -16,10 +16,12 @@ export class NoteService {
 
   async create(createNoteDto: CreateNoteDto, userId: string): Promise<Note>{
     try {
+
       const newNote = await new this.noteModel({
         userId,
         ...createNoteDto
       });
+      console.log(newNote);
       return newNote.save();
     }  catch {
       throw new InternalServerErrorException('Something went wrong! Try again');
@@ -27,12 +29,15 @@ export class NoteService {
     }
   }
 
-  async findAll(userId: string): Promise<Note[]> {
+  async findAll(request : any): Promise<Note[]> {
+    const {page = 1, limit = 5} = request.query;
     try {
       const noteData = await this.noteModel
         .find({
-          userId,
+          userId: request.user._id,
         })
+        .limit(limit)
+        .skip((page - 1) * limit)
         .exec();
 
       if(!noteData || noteData.length === 0) {
