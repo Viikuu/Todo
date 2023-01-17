@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   HttpStatus,
-  Res,
   Put,
   Request,
   BadRequestException, HttpCode, NotFoundException, UseGuards
@@ -43,7 +42,10 @@ export class NoteController {
     if(!noteData) {
       return {
         message: 'All notes data found successfully',
-        noteData: [],
+        noteData: {
+          notes:[],
+          pages: 1,
+        },
       };
     }
     return {

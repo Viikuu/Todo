@@ -29,7 +29,7 @@ export class NoteService {
     }
   }
 
-  async findAll(request : any): Promise<Note[]> {
+  async findAll(request : any): Promise<{ notes: Note[], pages}> {
     const {page = 1, limit = 5} = request.query;
     try {
       const noteData = await this.noteModel
@@ -39,11 +39,15 @@ export class NoteService {
         .limit(limit)
         .skip((page - 1) * limit)
         .exec();
+      const noteData1 = await this.noteModel
+        .find({
+          userId: request.user._id,
+        }).exec()
 
       if(!noteData || noteData.length === 0) {
         return null;
       }
-      return noteData;
+      return { notes: noteData, pages: Math.ceil(noteData1.length/limit)};
     } catch {
       throw new InternalServerErrorException('Something went wrong! Try again');
     }
