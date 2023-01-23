@@ -33,16 +33,16 @@ export class NoteService {
     const {page = 1, limit = 5} = request.query;
     try {
       const noteData = await this.noteModel
-        .find({
-          userId: request.user._id,
-        })
-        .limit(limit)
-        .skip((page - 1) * limit)
-        .exec();
+          .find({
+            userId: request.user._id,
+          })
+          .limit(limit)
+          .skip((page - 1) * limit)
+          .exec();
       const noteData1 = await this.noteModel
-        .find({
-          userId: request.user._id,
-        }).exec()
+          .find({
+            userId: request.user._id,
+          }).exec()
 
       if(!noteData || noteData.length === 0) {
         return null;
@@ -59,11 +59,11 @@ export class NoteService {
     }
     try {
       const existingNote = await this.noteModel
-        .findOne({
-          _id: id,
-          userId
-        })
-        .exec();
+          .findOne({
+            _id: id,
+            userId
+          })
+          .exec();
       if (!existingNote) {
         return null;
       }
@@ -92,16 +92,16 @@ export class NoteService {
     }
     try {
       const existingNote = await this.noteModel
-        .findOneAndUpdate(
-          {
-            _id: id,
-            userId
-          },
-          updateNote,
-          {
-            new: true,
-          })
-        .exec();
+          .findOneAndUpdate(
+              {
+                _id: id,
+                userId
+              },
+              updateNote,
+              {
+                new: true,
+              })
+          .exec();
 
       if (!existingNote) {
         return null;
@@ -118,11 +118,11 @@ export class NoteService {
     }
     try {
       const deletedNote = await this.noteModel
-        .findOneAndDelete({
-          _id: id,
-          userId
-        })
-        .exec();
+          .findOneAndDelete({
+            _id: id,
+            userId
+          })
+          .exec();
 
       if (!deletedNote) {
         return null;
