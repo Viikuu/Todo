@@ -30,7 +30,10 @@ Simple todo app build in [Nest](https://github.com/nestjs/nest)
 
 ```bash
 $ npm install
+$ echo DATABASE_HOST = > .env
 ```
+Specify DATABASE_HOST, it should be url to access mongodb database
+
 
 ## Running the app
 
